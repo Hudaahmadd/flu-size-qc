@@ -1,6 +1,6 @@
 # Fluorescence and Colony Size analysis 
 
-This repository contains scripts to analyse colony fluorescence and colony size measurements using two complementary approaches: min–max scaled fluorescence-to-size ratios and Z-scored fluorescence-to-size ratios.
+This repository contains scripts to analyse colony fluorescence and colony size measurements.
 
 The analysis workflow consists of:
 1. Extraction of per-colony fluorescence intensities from Typhoon scanner images (Python)
@@ -17,7 +17,7 @@ The analysis workflow consists of:
 - R ≥ 4.2  
 - Packages: tidyverse, ggplot2, ggbeeswarm, rstatix, ggpubr  
 
-## Image processing (Typhoon scanner)
+## Image processing
 
 Per-colony fluorescence pixel intensities are extracted from gridded Typhoon scanner images using a custom Python script:
 
