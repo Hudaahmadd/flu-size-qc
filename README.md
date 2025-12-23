@@ -7,15 +7,6 @@ The analysis workflow consists of:
 2. Colony size quantification using Iris 
 3. Statistical analysis, quality control, and visualisation in R
 
-## Repository structure
-
-flu-size-qc/
-├── README.md
-└── scripts/
-├── analysis_30C_scaled_zscore.R
-└── image_processing/
-└── extract_pixel_intensities.py
-
 ## Requirements
 
 ### Python (image processing)
@@ -44,6 +35,7 @@ Rscript scripts/analysis_30C_scaled_zscore.R \
   --size path/to/size_Final_dataset.csv \
   --out results \
   --date 23-12-2025
+  
 Notes
 Statistical comparisons are based on pairwise t-tests with Benjamini–Hochberg correction.
 
