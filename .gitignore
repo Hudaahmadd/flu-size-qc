@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+
+# Outputs
+results/
+data/
+
