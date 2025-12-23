@@ -66,9 +66,8 @@ save_tiff_plot <- function(plot_obj, filename, width_mm = 180, height_mm = 140, 
   dev.off()
 }
 
-# ----------------------------
-# 1) Read + standardise column names + clean
-# ----------------------------
+# 1) Read and standardise column names 
+
 flu  <- read.csv(flu_path,  check.names = FALSE)
 size <- read.csv(size_path, check.names = FALSE)
 
@@ -83,15 +82,14 @@ size_clean <- size %>%
   slice(-(1:2)) %>%
   mutate(across(-Gene, as.numeric))
 
-############################################################
+
 # A) SCALED PIPELINE 
-############################################################
 
 # A1) Min–max scale each column independently
 flu_scaled  <- flu_clean  %>% mutate(across(starts_with("Flu_"),  scale_mm))
 size_scaled <- size_clean %>% mutate(across(starts_with("Size_"), scale_mm))
 
-# A2) Compute log2(scaled flu / scaled size) for 30C A/B only
+# A2) Compute log2(scaled flu / scaled size) 
 ratio_scaled_long_30C <- flu_scaled %>%
   bind_cols(size_scaled %>% select(-Gene)) %>%
   transmute(
@@ -142,13 +140,13 @@ tukey_scaled <- tukey_hsd(dat30_scaled, log2_Flu_per_Size ~ Gene) %>%
 tukey_scaled_used_on_plot <- tukey_scaled %>%
   select(group1, group2, p.adj, p.signif, y.position)
 
-# A5) Export (scaled)
+# A5) Export files
 write.csv(dat30_scaled,         file.path(out_dir, "A_scaled_dat30_for_swarmplot.csv"), row.names = FALSE)
 write.csv(outliers_scaled_30C,  file.path(out_dir, "A_scaled_outliers_30C_Tukey1.5IQR.csv"), row.names = FALSE)
 write.csv(tukey_scaled,         file.path(out_dir, "A_scaled_TukeyHSD_30C_USED_ON_PLOT.csv"), row.names = FALSE)
 write.csv(get_anova_table(anova_scaled), file.path(out_dir, "A_scaled_ANOVA_30C_summary.csv"), row.names = FALSE)
 
-# A6) Plot + TIFF (scaled; no legend)
+# A6) Plot and save TIFF 
 yrng_scaled <- diff(range(dat30_scaled$log2_Flu_per_Size, na.rm = TRUE))
 
 p30_scaled <- ggplot(dat30_scaled, aes(x = Gene, y = log2_Flu_per_Size, color = Gene)) +
@@ -180,11 +178,9 @@ p30_scaled <- ggplot(dat30_scaled, aes(x = Gene, y = log2_Flu_per_Size, color = 
 
 save_tiff_plot(p30_scaled, file.path(out_dir, "A_scaled_Figure_30C_log2_Flu_per_Size_Tukey.tiff"))
 
-############################################################
 # B) Z-SCORE PIPELINE
-############################################################
 
-# B1) Compute raw log2(flu/size) for 30C A/B only
+# B1) Compute raw log2(flu/size) 
 ratio_raw_long_30C <- flu_clean %>%
   bind_cols(size_clean %>% select(-Gene)) %>%
   transmute(
@@ -204,7 +200,7 @@ ratio_raw_long_30C <- flu_clean %>%
   ) %>%
   filter(is.finite(log2_Flu_per_Size))
 
-# B2) Z-score across all 30C colonies
+# B2) Z-score across all colonies
 ratio_z_30C <- ratio_raw_long_30C %>%
   mutate(
     Zscore = (log2_Flu_per_Size - mean(log2_Flu_per_Size, na.rm = TRUE)) /
@@ -243,13 +239,13 @@ tukey_z <- tukey_hsd(dat30_z, Zscore ~ Gene) %>%
 tukey_z_used_on_plot <- tukey_z %>%
   select(group1, group2, p.adj, p.signif, y.position)
 
-# B5) Export (z-score)
+# B5) Export files
 write.csv(dat30_z,        file.path(out_dir, "B_zscore_dat30_for_swarmplot.csv"), row.names = FALSE)
 write.csv(outliers_z_30C, file.path(out_dir, "B_zscore_outliers_30C_Tukey1.5IQR.csv"), row.names = FALSE)
 write.csv(tukey_z,        file.path(out_dir, "B_zscore_TukeyHSD_30C_USED_ON_PLOT.csv"), row.names = FALSE)
 write.csv(get_anova_table(anova_z), file.path(out_dir, "B_zscore_ANOVA_30C_summary.csv"), row.names = FALSE)
 
-# B6) Plot + TIFF (z-score; no legend)
+# B6) Plot and save 
 yrng_z <- diff(range(dat30_z$Zscore, na.rm = TRUE))
 
 p30_z <- ggplot(dat30_z, aes(x = Gene, y = Zscore, color = Gene)) +
